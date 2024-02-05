@@ -17,7 +17,7 @@ class Event {
 	public emit(event_emitter: NodeEventEmitter, cancellable: boolean) {
 		// TODO: A better way of doing this?
 		setTimeout(() => {
-			const eventData = {
+			event_emitter.emit(this.name, {
 				...this.fields,
 				cancellable,
 				cancel: () => {
@@ -26,9 +26,7 @@ class Event {
 					}
 					this.cancelled = true
 				},
-			}
-
-			event_emitter.emit(this.name, eventData)
+			})
 
 			if (!this.cancelled) {
 				this.callback()
