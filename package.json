@@ -1,7 +1,11 @@
 {
 	"name": "@kotinash/better-events",
-	"version": "1.0.1",
+	"version": "1.0.2",
+	"scripts": {
+		"build": "npx tsc"
+	},
 	"devDependencies": {
+		"@types/node": "^20.11.17",
 		"typescript": "5.3.3"
 	}
 }

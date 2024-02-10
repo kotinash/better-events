@@ -11,15 +11,15 @@ class Event {
 
 	public callback: Callback
 
-	constructor(_name: string, _fields: any, _callback?: Callback) {
-		this.name = _name
-		this.fields = _fields
-		this.callback = _callback
+	constructor(name: string, fields?: any, callback?: Callback) {
+		this.name = name
+		this.fields = fields
+		this.callback = callback
 	}
 
-	public emit(event_emitter: NodeEventEmitter, cancellable: boolean) {
+	public emit(eventEmitter: NodeEventEmitter, cancellable: boolean = !(this.callback === undefined)) {
 		setTimeout(() => {
-			event_emitter.emit(this.name, {
+			eventEmitter.emit(this.name, {
 				...this.fields,
 				cancellable,
 				cancel: () => {
@@ -31,7 +31,7 @@ class Event {
 				},
 			})
 
-			if (!this.cancelled) {
+			if (!this.cancelled && this.callback) {
 				this.callback()
 			}
 		}, 0)
@@ -39,18 +39,18 @@ class Event {
 }
 
 class EventEmitter {
-	static event_emitter: NodeEventEmitter = new NodeEventEmitter()
+	private static event_emitter: NodeEventEmitter = new NodeEventEmitter()
 
 	static emit(event: Event, cancellable: boolean = true) {
 		event.emit(this.event_emitter, cancellable)
 	}
 
-	static on(event_name: string, callback: Callback): void {
-		this.event_emitter.on(event_name, callback)
+	static on(eventName: string, callback: Callback): void {
+		this.event_emitter.on(eventName, callback)
 	}
 
-	static once(event_name: string, callback: Callback): void {
-		this.event_emitter.once(event_name, callback)
+	static once(eventName: string, callback: Callback): void {
+		this.event_emitter.once(eventName, callback)
 	}
 }
 
