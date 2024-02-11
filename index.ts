@@ -11,15 +11,18 @@ class Event {
 
 	public callback: Callback
 
-	constructor(name: string, fields?: any, callback?: Callback) {
+	public cancel_callback: Callback
+
+	constructor(name: string, fields?: any, callback?: Callback, cancel_callback?: Callback) {
 		this.name = name
 		this.fields = fields
 		this.callback = callback
+		this.cancel_callback = cancel_callback
 	}
 
-	public emit(eventEmitter: NodeEventEmitter, cancellable: boolean = !(this.callback === undefined)) {
+	public emit(event_emitter: NodeEventEmitter, cancellable: boolean = !(this.callback === undefined)) {
 		setTimeout(() => {
-			eventEmitter.emit(this.name, {
+			event_emitter.emit(this.name, {
 				...this.fields,
 				cancellable,
 				cancel: () => {
@@ -27,12 +30,14 @@ class Event {
 						throw new Error("Event is not cancellable")
 					}
 
+					(this.cancel_callback ?? (() => {}))();
+
 					this.cancelled = true
 				},
 			})
 
 			if (!this.cancelled && this.callback) {
-				this.callback()
+				(this.callback ?? (() => {}))();
 			}
 		}, 0)
 	}
